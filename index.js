@@ -3,8 +3,8 @@ var temp = require("temp");
 var ghdownload = require('github-download');
 var path = require("path");
 var fs = require("fs-extra");
-var https = require("https");
 var npm = require('npm-programmatic');
+var request = require('request');
 
 var Init = {
 
@@ -32,10 +32,9 @@ var Init = {
 
         var options = {
           method: 'HEAD',
-          host: 'raw.githubusercontent.com',
-          path: '/trufflesuite/' + expected_full_name + "/master/truffle.js"
+          uri: 'https://raw.githubusercontent.com/trufflesuite/' + expected_full_name + "/master/truffle.js"
         };
-        req = https.request(options, function(r) {
+      	request(options, function(error, r, body) {
           if (r.statusCode == 404) {
             return reject(new Error("Example '" + name + "' doesn't exist. If you believe this is an error, please contact Truffle support."));
           } else if (r.statusCode != 200) {
@@ -43,8 +42,6 @@ var Init = {
           }
           accept();
         });
-        req.end();
-
       });
     }).then(function() {
       // Remove the temp directory, if it exists, just to remove the
